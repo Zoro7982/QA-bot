@@ -9,11 +9,8 @@ load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-app = FastAPI()
+app = FastAPI(docs_url="/", redoc_url="/redoc")
 
-@app.get("/")
-def root():
-    return {"message": "QA Bot is alive"}
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
