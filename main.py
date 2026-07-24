@@ -52,6 +52,30 @@ async def ask_question(file: UploadFile = File(...), question: str = "summarize 
             }
         ]
     )
+@app.post("/summarize")
+async def summarize_pdf(file: UploadFile = File(...)):
+
+    contents = await file.read()
+
+    pdf = PdfReader(io.BytesIO(contents))
+
+    text = ""
+    for page in pdf.pages:
+        text += page.extract_text()
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "user",
+                "content": f"Summarize this in one paragraph:\n{text[:10000]}"
+            }
+        ]
+    )
+
+    return {
+        "summary":response.choices[0].message.content
+    }
     
     return {
         "question": question,
